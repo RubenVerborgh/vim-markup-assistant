@@ -56,3 +56,7 @@ Plug 'RubenVerborgh/vim-markup-assistant'
   In contrast to Vim Markup Assistant, it requires multiple keystrokes,
   does not join adjacent regions, and does not easily support `**` surroundings.
   Both plugins are compatible and complementary.
+
+## License
+[MIT License](https://opensource.org/licenses/MIT) –
+Copyright © 2016–present Ruben Verborgh (https://ruben.verborgh.org/)
