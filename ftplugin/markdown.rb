@@ -27,7 +27,7 @@ module Markdown
   # returning the updated position
   def self.toggle_marker text, pos, marker
     # Find a marked segment around the position
-    segment_start = nil; segment_end = -1; content_before = nil
+    segment_start = nil; segment_end = -1; prev_segment_end = text.length
     loop do
       # Find the next start marker before the position
       segment_start = text.index(marker, segment_end + 1)
@@ -42,15 +42,15 @@ module Markdown
 
       # Clear the segment
       segment_start = nil
-      content_before = segment_end + 1
+      prev_segment_end = segment_end
     end
 
     # The position is not within a marked segment
     if segment_start.nil?
       # Create segment on surrounding word boundaries
-      segment_start = text.rindex(/\W/, pos)
+      segment_start = text.rindex(/\W/, pos - 1)
       segment_start = segment_start.nil? ? 0 : segment_start + 1
-      segment_end = text.index(/\W/, pos)
+      segment_end = text.index(/\W/, pos + 1)
       segment_end = segment_end.nil? ? text.length : segment_end - 1
 
       # Set up markers
@@ -58,16 +58,19 @@ module Markdown
       end_marker = marker
 
       # Join with previous segment if they are only separated by whitespace
-      unless content_before.nil? || text[content_before..(segment_start-1)] =~ /\S/
-        text[(content_before-marker.length)..(content_before-1)] = ''
-        pos -= start_marker.length
+      prev_content = (prev_segment_end + 1)..(segment_start - 1)
+      if text[prev_content] =~ /^\s*$/
+        text[(prev_content.begin-marker.length)..prev_segment_end] = ''
+        pos -= marker.length
+        segment_end -= marker.length
         start_marker = ''
       end
 
       # Join with next segment if they are only separated by whitespace
-      content_after = text.index(marker, segment_end + 1)
-      unless content_after.nil? || text[(segment_end+1)..(content_after-1)] =~ /\S/
-        text[content_after,marker.length] = ''
+      next_segment_start = text.index(marker, segment_end + 1) || 0
+      next_content = (segment_end + 1)..(next_segment_start - 1)
+      if text[next_content] =~ /^\s*$/
+        text[next_segment_start,marker.length] = ''
         end_marker = ''
       end
 
@@ -80,7 +83,7 @@ module Markdown
     else
       # Remove markers around segment
       segment = segment_start..segment_end
-      contents = (segment_start+marker.length)..(segment_end-marker.length)
+      contents = (segment_start + marker.length)..(segment_end - marker.length)
       text[segment] = text[contents]
       pos = [segment_start, pos - marker.length].max
     end

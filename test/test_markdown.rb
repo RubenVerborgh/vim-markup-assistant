@@ -40,16 +40,22 @@ public
   end
 
   def test_surround_in_presence_of_previous_segment
-    compare_toggle_marker 'abc **def**  ghi', 13, '**',
-                          'abc **def  ghi**', 11
+    compare_toggle_marker 'abc **def**ghi jkl', 11, '**',
+                          'abc **defghi** jkl',  9
+    compare_toggle_marker 'abc **def**  ghi jkl', 13, '**',
+                          'abc **def  ghi** jkl', 11
   end
 
   def test_surround_in_presence_of_following_segment
+    compare_toggle_marker 'abc def**ghi** jkl', 4, '**',
+                          'abc **defghi** jkl', 6
     compare_toggle_marker 'abc def  **ghi** jkl', 4, '**',
                           'abc **def  ghi** jkl', 6
   end
 
   def test_surround_in_presence_of_previous_and_following_segments
+    compare_toggle_marker 'abc **abc**-**def** ghi', 11, '**',
+                          'abc **abc-def** ghi',      9
     compare_toggle_marker 'abc **abc** def   **ghi** jkl', 12, '**',
                           'abc **abc def   ghi** jkl', 10
   end
