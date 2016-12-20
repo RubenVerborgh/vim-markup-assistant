@@ -9,6 +9,16 @@ public
                           'abc **def** ghi', 7
   end
 
+  def test_surround_one_word_ignores_previous_markup
+    compare_toggle_marker '**ab** c def ghi',      9, '**',
+                          '**ab** c **def** ghi', 11
+  end
+
+  def test_surround_one_word_ignores_following_markup
+    compare_toggle_marker 'abc def g **hi**',     5, '**',
+                          'abc **def** g **hi**', 7
+  end
+
   def test_unsurround_one_word
     compare_toggle_marker 'abc **def** ghi', 7, '**',
                           'abc def ghi',     5
@@ -27,6 +37,21 @@ public
   def test_unsurround_without_end
     compare_toggle_marker 'abc **def ghi', 7, '**',
                           'abc def ghi',   5
+  end
+
+  def test_surround_in_presence_of_previous_segment
+    compare_toggle_marker 'abc **def**  ghi', 13, '**',
+                          'abc **def  ghi**', 11
+  end
+
+  def test_surround_in_presence_of_following_segment
+    compare_toggle_marker 'abc def  **ghi** jkl', 4, '**',
+                          'abc **def  ghi** jkl', 6
+  end
+
+  def test_surround_in_presence_of_previous_and_following_segments
+    compare_toggle_marker 'abc **abc** def   **ghi** jkl', 12, '**',
+                          'abc **abc def   ghi** jkl', 10
   end
 
 private

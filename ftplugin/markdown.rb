@@ -27,22 +27,22 @@ module Markdown
   # returning the updated position
   def self.toggle_marker text, pos, marker
     # Find a marked segment around the position
-    segment_start = -1; segment_end = -1; content_start = -1
+    segment_start = nil; segment_end = -1; content_before = nil
     loop do
-      # Find the next start marker
+      # Find the next start marker before the position
       segment_start = text.index(marker, segment_end + 1)
-      break if segment_start.nil?
+      segment_start = nil if segment_start && segment_start > pos
+      break if segment_start.nil? # no segment found
 
       # Find the next end marker
       segment_end = text.index(marker, segment_start + marker.length) ||
                     (text.length + 1)
       segment_end += marker.length - 1
+      break if segment_end >= pos # segment found
 
-      # Stop if the position falls within the current segment
-      break if pos.between?(segment_start, segment_end)
-
-      # Find the start position of the content after the current segment
-      content_start = segment_end + 1
+      # Clear the segment
+      segment_start = nil
+      content_before = segment_end + 1
     end
 
     # The position is not within a marked segment
@@ -52,19 +52,30 @@ module Markdown
       segment_start = segment_start.nil? ? 0 : segment_start + 1
       segment_end = text.index(/\W/, pos)
       segment_end = segment_end.nil? ? text.length : segment_end - 1
-      segment = segment_start..segment_end
 
-      # If there is preceding segment only separated by whitespace
-      if content_start >= 0 && text[content_start..(segment_start-1)] =~ /^\s$/
-        # Join with the previous segment
-        segment = (content_start-marker.length)..segment_end
-        text[segment] = "#{text[content_start..segment_end]}#{marker}"
-        pos -= marker.length
-      else
-        # Place markers around segment
-        text[segment] = "#{marker}#{text[segment]}#{marker}"
-        pos += marker.length
+      # Set up markers
+      start_marker = marker
+      end_marker = marker
+
+      # Join with previous segment if they are only separated by whitespace
+      unless content_before.nil? || text[content_before..(segment_start-1)] =~ /\S/
+        text[(content_before-marker.length)..(content_before-1)] = ''
+        pos -= start_marker.length
+        start_marker = ''
       end
+
+      # Join with next segment if they are only separated by whitespace
+      content_after = text.index(marker, segment_end + 1)
+      unless content_after.nil? || text[(segment_end+1)..(content_after-1)] =~ /\S/
+        text[content_after,marker.length] = ''
+        end_marker = ''
+      end
+
+      # Place markers around segment
+      segment = segment_start..segment_end
+      text[segment] = "#{start_marker}#{text[segment]}#{end_marker}"
+      pos += start_marker.length
+
     # The position is within a marked segment
     else
       # Remove markers around segment
