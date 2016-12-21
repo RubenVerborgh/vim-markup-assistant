@@ -129,6 +129,30 @@ public
                                '             ^             ', '           ^           '
   end
 
+  def test_byte_pos_to_char_pos
+    assert_equal 0, Markdown.byte_pos_to_char_pos('',   0)
+    assert_equal 0, Markdown.byte_pos_to_char_pos('',   1)
+    assert_equal 0, Markdown.byte_pos_to_char_pos('ea', 0)
+    assert_equal 1, Markdown.byte_pos_to_char_pos('ea', 1)
+    assert_equal 2, Markdown.byte_pos_to_char_pos('ea', 2)
+    assert_equal 2, Markdown.byte_pos_to_char_pos('ea', 3)
+    assert_equal 0, Markdown.byte_pos_to_char_pos('éa', 0)
+    assert_equal 1, Markdown.byte_pos_to_char_pos('éa', 2)
+    assert_equal 2, Markdown.byte_pos_to_char_pos('éa', 3)
+  end
+
+  def test_char_pos_to_byte_pos
+    assert_equal 0, Markdown.char_pos_to_byte_pos('',   0)
+    assert_equal 0, Markdown.char_pos_to_byte_pos('',   1)
+    assert_equal 0, Markdown.char_pos_to_byte_pos('ea', 0)
+    assert_equal 1, Markdown.char_pos_to_byte_pos('ea', 1)
+    assert_equal 2, Markdown.char_pos_to_byte_pos('ea', 2)
+    assert_equal 2, Markdown.byte_pos_to_char_pos('ea', 3)
+    assert_equal 0, Markdown.char_pos_to_byte_pos('éa', 0)
+    assert_equal 2, Markdown.char_pos_to_byte_pos('éa', 1)
+    assert_equal 3, Markdown.char_pos_to_byte_pos('éa', 2)
+  end
+
 private
   def assert_toggle_marker marker, input, expected_output, input_pos, expected_output_pos
     input_pos = pos_string_to_number(input_pos)

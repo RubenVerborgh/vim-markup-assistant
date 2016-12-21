@@ -13,13 +13,19 @@ module Markdown
 
   # Toggles the given marker around the cursor
   def self.toggle_at_cursor marker
+    # Get current line and cursor
     buffer = VIM::Buffer.current
     window = VIM::Window.current
-
     line = buffer.line
     cursor = window.cursor
-    cursor[1] = toggle_marker(line, cursor[1], marker)
 
+    # Determine new line and cursor
+    # (Vim uses byte position; Ruby uses character position)
+    column = byte_pos_to_char_pos(line, cursor[1])
+    column = toggle_marker(line, column, marker)
+    cursor[1] = char_pos_to_byte_pos(line, column)
+
+    # Set new line and cursor
     buffer.line = line
     window.cursor = cursor
   end
@@ -89,6 +95,18 @@ module Markdown
       pos = [segment_start, pos - marker.length].max
       pos = [pos,  contents.end - marker.length].min
     end
+  end
+
+  # Converts a string position in bytes to a string position in characters
+  def self.byte_pos_to_char_pos string, byte_pos
+    string.length.times do |char_pos|
+      return char_pos if string[0,char_pos].bytesize >= byte_pos
+    end
+  end
+
+  # Converts a string position in characters to a string position in bytes
+  def self.char_pos_to_byte_pos string, char_pos
+    string[0,char_pos].bytesize
   end
 
 end
