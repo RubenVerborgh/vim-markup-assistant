@@ -48,9 +48,9 @@ module Markdown
     # The position is not within a marked segment
     if segment_start.nil?
       # Create segment on surrounding word boundaries
-      segment_start = text.rindex(/\W/, pos - 1)
+      segment_start = text.rindex(/\s|[*_]/, pos - 1)
       segment_start = segment_start.nil? ? 0 : segment_start + 1
-      segment_end = text.index(/\W/, pos + 1)
+      segment_end = text.index(/\s|[*_]/, pos + 1)
       segment_end = segment_end.nil? ? text.length : segment_end - 1
 
       # Set up markers

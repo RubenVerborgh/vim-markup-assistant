@@ -15,6 +15,15 @@ public
                                '      ^    ', '        ^      '
   end
 
+  def test_surround_boundaries
+    assert_toggle_marker '**', 'abc d-e-f ghi', 'abc **d-e-f** ghi',
+                               '      ^      ', '        ^        '
+    assert_toggle_marker '**', 'abc çéà ghi', 'abc **çéà** ghi',
+                               '     ^     ', '       ^       '
+    assert_toggle_marker '**', 'abc ([xyz]) ghi', 'abc **([xyz])** ghi',
+                               '       ^       ', '         ^         '
+  end
+
   def test_surround_one_word_ignores_previous_markup
     assert_toggle_marker '**', '**ab** c def ghi', '**ab** c **def** ghi',
                                '          ^     ', '            ^       '
