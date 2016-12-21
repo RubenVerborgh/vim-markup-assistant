@@ -86,6 +86,7 @@ module Markdown
       contents = (segment_start + marker.length)..(segment_end - marker.length)
       text[segment] = text[contents]
       pos = [segment_start, pos - marker.length].max
+      pos = [pos,  contents.end - marker.length].min
     end
   end
 
