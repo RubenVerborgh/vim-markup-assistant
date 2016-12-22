@@ -44,6 +44,11 @@ public
                                '      ^      ', '        ^        '
   end
 
+  def test_surround_nonbreaking_space_boundaries
+    assert_toggle_marker '**', 'abc d ef ghi', 'abc d **ef** ghi',
+                               '      ^     ', '        ^       '
+  end
+
   def test_surround_one_word_ignores_previous_markup
     assert_toggle_marker '**', '**ab** c def ghi', '**ab** c **def** ghi',
                                '          ^     ', '            ^       '

@@ -1,5 +1,5 @@
 module Markdown
-  WORD_BOUNDARY = /\s|[*_.,;!¡¿?]/
+  WORD_BOUNDARY = /[*_.,;!¡¿?  \t\n\r\v\f]/
 
   # Toggles emphasis around the cursor
   def self.toggle_emphasis_at_cursor
