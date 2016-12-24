@@ -15,6 +15,16 @@ public
                                '      ^    ', '        ^      '
   end
 
+  def test_surround_start
+    assert_toggle_marker '**', 'abc def ghi', '**abc** def ghi',
+                               '^          ', '  ^            '
+  end
+
+  def test_surround_end
+    assert_toggle_marker '**', 'abc def ghi', 'abc def **ghi**',
+                               '          ^', '            ^  '
+  end
+
   def test_surround_character_boundaries
     assert_toggle_marker '**', 'abc d-e-f ghi', 'abc **d-e-f** ghi',
                                '      ^      ', '        ^        '
